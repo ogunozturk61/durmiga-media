@@ -74,15 +74,15 @@ Ortak aile: **HAYVAN** kartları her build'e girebilen yardımcılar ("bir HAYVA
 | Ateş Tılsımı | K · KUTSAL | 4 | 3 yanma | TETİK |
 | Kâğıt Fener | K · ALET | 5 | 2 yanma · Bir ATEŞ kartı kullanılınca 0,5 sn şarj | MOTOR |
 | Kızgın Kor (YENİ) | K · ALET | pasif | Yanma uyguladığında rastgele değil EN YAVAŞ ATEŞ kartını 0,5 sn şarj et | MOTOR |
-| Ateş Şarabı (YENİ) | K · İKSİR | 6 | 5 yanma · Kendine 5 hasar | TETİK |
+| Ateş Şarabı (YENİ) | K · İKSİR | 6 | 5 yanma · Kendine 5 hasar · SATINCA: tüm ATEŞ kartlarına kalıcı +1 yanma | TETİK |
 | Mürekkep Damlası | K · İKSİR | 3 | 5 hasar · Her kullanımda bu savaş +2 · Kalıcı: her gün +1 | TAŞIYICI |
 | Yıldırım | O · KUTSAL | 6 | 25 hasar, kalkanı deler · Rakipte donmuş kart varsa ×2 | TAŞIYICI |
 | Beş Element | B · KUTSAL | 9 | 60 hasar · Tezgâhtaki her farklı OKUL için savaş başında 1 sn şarj | TAŞIYICI |
 | Anka Tüyü | K · KUTSAL | pasif | İlk kez can %50 altına düşünce 50 iyileşme + ATEŞ kartları 3 sn hızlanır | DESTEK |
 ### ORTAK / EKONOMİ
 | Altın Abaküs | K · ALET | pasif | Her gün +2 altın (çantada da) | EKONOMİ |
-| Tüccar Kesesi (YENİ) | K · ALET | pasif | Kalıcı: her gün +1 değer kazanır; satınca değeri kadar altın | EKONOMİ |
-| Bilge Kaplumbağa (YENİ) | O · HAYVAN | 8 | 20 kalkan · Bir HAYVAN kullanılınca 1 sn şarj · +1 XP her gün (çantada da) | EKONOMİ/DESTEK |
+| Tüccar Kesesi (YENİ) | K · ALET | pasif | Kalıcı: her gün +1 değer kazanır; satınca değeri kadar altın + kalıcı gelir +1 (Altın/Elmas: +2) | EKONOMİ |
+| Bilge Kaplumbağa (YENİ) | O · HAYVAN | 8 | 20 kalkan · Bir HAYVAN kullanılınca 1 sn şarj · +1 XP her gün (çantada da) · SATINCA: kalıcı +10 maks. can | EKONOMİ/DESTEK |
 Yeni çizim gereken kartlar (14): Turna Yavrusu, Gökdelen Yay, Engerek, Zehir Kesesi, Engerek Yayı, Bin Hançer, Usta Kemeri, Demirci Örsü, Kılıç Kını, Taş Bekçi, Dağ Mührü, Kızgın Kor, Ateş Şarabı, Tüccar Kesesi, Bilge Kaplumbağa (15).
 
 ## 5. Beceriler (25) — etiket hedefli; Bronz » Gümüş » Altın » Elmas
@@ -154,3 +154,5 @@ Bize uyarlanacak 10 ders:
 10. **Kapı seçimi = yön seçimi.** Her durakta 3 kapı (tematik tüccar / etkinlik / canavar) ve kapıda tür rozeti. Tematik tüccar (zehir öğretmeni, kritik öğretmeni) oyuncuya "bu yola git" mesajı veriyor.
 
 Bazaar'da kafa karıştıran (bizde YAPILMAYACAK): sürükleme zor; öğretici kutular savaşı durduruyor; dışarıda x7 görünen mermi savaşta x11 oluyor; çanta doluyken satın alma uyarısı yok (2 sakız kayboldu). → Bizde: dokun-seç-dokun-yerleştir, savaşta pop-up yok, gösterilen sayı = savaştaki sayı, çanta doluysa "Satın al" düğmesi kilitli + uyarı.
+
+Satınca kalıcı değerler (25 Kas, Claude kararı): Ateş Şarabı +1 yanma tüm ATEŞ kartlarına; Bilge Kaplumbağa +10 maks. can; bu ikisi kademe başına ×2 (Bronz/Gümüş/Altın/Elmas = 1/2/4/8 ve 10/20/40/80). Tüccar Kesesi kalıcı gelir +1, Altın ve Elmas'ta +2. Etki birikir (aynı kartı tekrar alıp satmak tekrar verir). Detay panelinde 'SATINCA:' satırı ayrı renkte; satış onayında kazanılacak kalıcı güç yazılır.
