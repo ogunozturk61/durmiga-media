@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="tr"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<title>Lantern Caravan — sade</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Rubik:wght@400;600;800&display=swap" rel="stylesheet">
+<style>
+/* VOICE: sıcak, oyuncu dostu, büyük yazı
+   IDEA: gece pazarında fener ışığında bir kervan tezgâhı
+   PICTURE: kartlar = tezgâhtaki 5 sıra; canavar üstte
+   COLOUR and TYPE: kâğıt/fener kırmızısı; 3 okul rengi; Rubik
+   LAYOUT: telefon dikey, tek sütun, en küçük yazı 15px */
+:root{color-scheme:light dark;--bg:light-dark(#f4ead7,#1f120d);--card:light-dark(#fffaf0,#2d1b14);--ink:light-dark(#2a1d14,#f6ead6);--mut:light-dark(#6f5b49,#c9b39a);--line:light-dark(#e2d3b8,#4a3226);--acc:#c8361d;--gold:#e0a526;--R:#2e8b6e;--A:#d4471e;--C:#4c6a8c}
+:root[data-theme=light]{color-scheme:light}:root[data-theme=dark]{color-scheme:dark}
+*{box-sizing:border-box;min-width:0;-webkit-tap-highlight-color:transparent}
+body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.4 Rubik,system-ui,sans-serif;overflow-x:clip}
+#app{max-width:480px;margin:0 auto;padding:12px 12px 28px;min-height:100vh}
+button{font:inherit;cursor:pointer;border:0;border-radius:14px}
+.big{display:block;width:100%;padding:16px;font-size:20px;font-weight:800;background:var(--acc);color:#fff;margin-top:12px;box-shadow:0 4px 0 #8e2210}
+.big:active{transform:translateY(2px);box-shadow:0 2px 0 #8e2210}
+.ghost{background:transparent;color:var(--mut);padding:12px;width:100%;font-size:16px;text-decoration:underline}
+.hud{display:flex;align-items:center;gap:10px;font-weight:800;font-size:18px;margin-bottom:8px}
+.hud .sp{flex:1}.hearts{color:var(--acc);letter-spacing:2px;font-size:22px}
+.gucpill{background:var(--card);border:2px solid var(--line);border-radius:99px;padding:4px 12px}
+.gucpill b{color:var(--acc)}
+.pw{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.pw button{background:var(--gold);color:#2a1d14;padding:6px 12px;font-size:15px;font-weight:600;border-radius:99px}
+.pw .none{font-size:15px;color:var(--mut)}
+.enemy{display:flex;gap:12px;align-items:center;background:var(--card);border:2px solid var(--line);border-radius:18px;padding:10px;position:relative}
+.enemy img{width:96px;height:96px;object-fit:contain;flex:none}
+.enemy.fight img{width:120px;height:120px}
+.enemy h2{margin:0;font-size:21px;line-height:1.15}
+.enemy p{margin:2px 0 0;font-size:15px;color:var(--mut)}
+.boss{display:inline-block;background:var(--acc);color:#fff;font-size:13px;font-weight:800;border-radius:6px;padding:1px 7px;margin-left:6px;vertical-align:middle}
+.bar{height:26px;border-radius:9px;background:var(--line);position:relative;overflow:hidden;margin-top:6px}
+.bar i{position:absolute;inset:0 auto 0 0;background:#c8361d;transition:width .15s}
+.bar.me i{background:#3d9a52}.bar s{position:absolute;inset:0 auto 0 0;background:rgba(80,140,230,.55);text-decoration:none}
+.bar span{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:16px;color:#fff;text-shadow:0 1px 2px #000}
+.lbl{display:flex;justify-content:space-between;font-size:15px;font-weight:600;margin-top:10px}
+.burn{color:var(--A)}
+.rows{display:flex;flex-direction:column;margin-top:10px}
+.row{display:flex;gap:10px;align-items:center;background:var(--card);border:3px solid var(--line);border-left-width:10px;border-radius:14px;padding:8px;position:relative;text-align:left;width:100%;color:inherit}
+.row.R{border-left-color:var(--R)}.row.A{border-left-color:var(--A)}.row.C{border-left-color:var(--C)}
+.row.sel{outline:4px solid var(--gold);outline-offset:1px}
+.row.empty{border-style:dashed;justify-content:center;color:var(--mut);min-height:72px;font-size:16px}
+.row img{width:60px;height:60px;border-radius:10px;flex:none}
+.row .tx{flex:1}.row .nm{font-weight:800;font-size:17px;line-height:1.2}
+.row .ef{font-size:15px;color:var(--mut);line-height:1.3}
+.stars{color:var(--gold);font-size:15px;margin-left:4px}
+.tag{font-size:13px;font-weight:800;color:#fff;border-radius:6px;padding:1px 6px;margin-left:4px;vertical-align:middle}
+.tag.R{background:var(--R)}.tag.A{background:var(--A)}.tag.C{background:var(--C)}
+.link{height:14px;display:flex;justify-content:center;align-items:center}
+.link b{font-size:13px;font-weight:800;color:#fff;border-radius:99px;padding:0 10px;line-height:18px;position:relative;z-index:1}
+.link.R b{background:var(--R)}.link.A b{background:var(--A)}.link.C b{background:var(--C)}
+.cdb{position:absolute;left:0;bottom:0;height:5px;background:var(--gold);border-radius:0 3px 3px 0}
+.row.fire{animation:fire .25s}@keyframes fire{50%{transform:scale(1.04);background:light-dark(#fff1c9,#5a3a18)}}
+.link.K b{background:var(--gold);color:#2a1d14;font-size:14px}
+.cmb{display:block;font-size:14px;font-weight:600;color:var(--mut);margin-top:2px}.cmb.on{color:#b07a00}
+.act{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:8px}.act span{font-size:15px;font-weight:800;border-radius:99px;padding:4px 10px;color:#fff}
+.act .K{background:var(--gold);color:#2a1d14}.act .R{background:var(--R)}.act .A{background:var(--A)}.act .C{background:var(--C)}
+.badge.k{background:#2a1d14;color:var(--gold)}
+.delta{font-weight:800;font-size:16px;border-radius:10px;padding:4px 8px;background:var(--gold);color:#2a1d14;flex:none}
+.delta.neg{background:var(--line);color:var(--mut)}
+.info{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px;margin-top:10px;font-size:17px;min-height:56px}
+.info b{display:block;font-size:18px}
+.hint{text-align:center;font-weight:600;font-size:18px;margin:12px 0 4px}
+h1{font-size:40px;line-height:1.05;margin:24px 0 6px;text-align:center}
+.sub{text-align:center;color:var(--mut);margin:0 0 18px}
+.steps{display:grid;gap:10px}
+.steps div{background:var(--card);border:2px solid var(--line);border-radius:14px;padding:12px 14px;font-size:18px}
+.steps b{color:var(--acc);margin-right:6px}
+.offer{display:flex;gap:12px;align-items:center;background:var(--card);border:3px solid var(--line);border-left-width:10px;border-radius:16px;padding:10px;margin-bottom:10px;width:100%;text-align:left;color:inherit}
+.offer.R{border-left-color:var(--R)}.offer.A{border-left-color:var(--A)}.offer.C{border-left-color:var(--C)}
+.offer img{width:78px;height:78px;border-radius:12px;flex:none}
+.offer .nm{font-size:19px;font-weight:800}.offer .ef{font-size:16px}
+.badge{display:inline-block;margin-top:4px;font-size:14px;font-weight:800;border-radius:8px;padding:2px 8px;background:var(--gold);color:#2a1d14}
+.badge.new{background:var(--line);color:var(--ink)}
+.res{text-align:center}.res h1{color:var(--acc)}.res.win h1{color:#3d9a52}
+.contrib{display:grid;gap:6px;margin:12px 0}
+.contrib div{display:flex;align-items:center;gap:10px;background:var(--card);border-radius:12px;padding:6px 10px;font-size:17px}
+.contrib img{width:40px;height:40px;border-radius:8px}.contrib span{flex:1;text-align:left}.contrib b{font-size:20px}
+.float{position:absolute;font-weight:800;font-size:26px;pointer-events:none;animation:up .9s forwards;text-shadow:0 2px 3px rgba(0,0,0,.5);color:#fff;z-index:5}
+@keyframes up{to{transform:translateY(-50px);opacity:0}}
+.speed{background:var(--card);border:2px solid var(--line);color:var(--ink);padding:6px 12px;font-size:16px;font-weight:800}
+.toast{position:fixed;left:50%;top:18px;transform:translateX(-50%);background:var(--gold);color:#2a1d14;font-weight:800;padding:12px 18px;border-radius:14px;z-index:9;font-size:18px;box-shadow:0 6px 18px rgba(0,0,0,.3);animation:tin .3s}
+@keyframes tin{from{transform:translate(-50%,-20px);opacity:0}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style></head><body><div id="app"></div>
+<script>/*ENGINE*/</script>
+<script>/*IMG*/</script>
+<script>
+{
+const $=s=>document.querySelector(s);const app=$('#app');
+const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+let run=null,screen='start',sel=-1,pend=null,offerList=[],powList=[],fs=null,speed=1,last=null,lastScore=0,info=null;
+const lvStars=lv=>'★'.repeat(lv+1);
+function toast(t){const d=document.createElement('div');d.className='toast';d.textContent=t;document.body.appendChild(d);setTimeout(()=>d.remove(),1800);}
+function actRow(){const cb=computeBoard(run.board,run.powers);const a=[...cb.combos.map(c=>`<span class="K">⚡ ${esc(c.ad)}</span>`),...cb.sets.map(k=>`<span class="${k}">${esc(SETS[k].ad)}</span>`)];
+ return a.length?`<div class="act">${a.join('')}</div>`:'';}
+function hud(){const sc=powerScore(run.board,run.powers);
+ return `<div class="hud"><span class="hearts" aria-label="${run.lives} can">${'♥'.repeat(run.lives)}<span style="opacity:.25">${'♥'.repeat(3-run.lives)}</span></span><span class="sp">Savaş ${run.fight+1}/10</span><span class="gucpill">Güç <b>${sc}</b></span></div>
+ <div class="pw">${run.powers.length?run.powers.map(p=>`<button data-pw="${p}">✦ ${esc(POWER[p].ad)}</button>`).join(''):''}</div>`;}
+function enemyBox(f,fight){const sp=[];if(f.shieldEvery)sp.push(`Her ${f.shieldEvery} sn ${f.shieldAmt} kalkan alır`);if(f.healEvery)sp.push(`Her ${f.healEvery} sn ${f.healAmt} can yeniler`);if(f.burnHit)sp.push(`Her vuruşu seni ${f.burnHit} yakar`);
+ return `<div class="enemy ${fight?'fight':''}" id="enemy"><img src="${IMG[f.img]}" alt=""><div style="flex:1"><h2>${esc(f.ad)}${f.boss?'<span class="boss">BOSS</span>':''}</h2>
+ <p>${f.atk} hasar / ${String(f.cd).replace('.',',')} sn${sp.length?' · '+sp.join(' · '):''}</p>
+ ${fight?`<div class="bar" id="ehp"><s></s><i></i><span></span></div><div class="lbl"><span id="ebn" class="burn"></span><span id="esh"></span></div>`:`<p><b>${f.hp} can</b></p>`}</div></div>`;}
+function rowsHTML(board,opt={}){const comp=computeBoard(board,run.powers);let h='';
+ board.forEach((s,i)=>{
+  if(i>0){const a=board[i-1],b=s;const kb=a&&b&&comp.combos.find(c=>c.i===i-1);const same=a&&b&&CARD[a.id].renk===CARD[b.id].renk;
+   if(kb||same)h+=`<div class="link ${kb?'K':CARD[b.id].renk}"><b>${kb?'⚡':''}${kb&&same?' ':''}${same?'+%'+(run.powers.includes('bag')?60:30):''}</b></div>`;else h+='<div style="height:8px"></div>'}
+  const d=opt.delta?opt.delta[i]:null;
+  const dl=d==null?'':`<span class="delta ${d<=0?'neg':''}">${d>0?'+':''}${d} güç</span>`;
+  if(!s){h+=`<button class="row empty" data-slot="${i}">${opt.placing?'Buraya koy':'Boş yer'}${dl?' '+dl:''}</button>`;return;}
+  const c=CARD[s.id],o=comp[i];
+  h+=`<button class="row ${c.renk} ${sel===i?'sel':''}" data-slot="${i}" id="r${i}"><img src="${IMG[c.img]}" alt=""><span class="tx"><span class="nm">${esc(c.ad)}<span class="stars">${lvStars(s.lv)}</span></span><br><span class="ef">${esc(liveText(o))}</span></span>${dl}${opt.fight?'<span class="cdb" style="width:0"></span>':''}</button>`;});
+ return `<div class="rows">${h}</div>`;}
+function comboLine(c,o){const p=partnerOf(c.id);if(!p)return '';const [pid,cb]=p;
+ if(o&&o.combo)return `<span class="cmb on">⚡ ${esc(cb.ad)} aktif: ${esc(cb.txt)}</span>`;
+ return `<span class="cmb">Kombo: ${esc(CARD[pid].ad)} yanına gelirse → ${esc(cb.ad)}</span>`;}
+function liveText(o){const c=o.c;if(c.pas)return cardText(c,o.lv);const p=[];
+ if(o.dmg)p.push(`${o.dmg} hasar${o.hits>1?' ×'+o.hits:''}`);if(o.burn)p.push(`${o.burn} yanma`);if(o.shield)p.push(`${o.shield} kalkan`);if(o.heal)p.push(`${o.heal} can`);if(c.trig)p.push('yanındakileri çalıştırır');
+ let s=`Her ${(Math.round(o.cd*10)/10).toString().replace('.',',')} sn: ${p.join(' + ')}`;if(c.slow)s+=', yavaşlatır';if(o.grow)s+=`, her vuruşta +${o.grow}`;return s;}
+function render(){
+ if(screen==='start'){app.innerHTML=`<h1>Lantern Caravan</h1><p class="sub">Kartlarını diz, canavarları yen. 10 savaş, 3 can.</p>
+  <div class="steps"><div><b>1</b>Her savaştan sonra 3 karttan birini seç.</div><div><b>2</b>Kartları sıraya diz. <b style="color:var(--R)">Aynı renk</b> yan yana = daha güçlü.</div><div><b>3</b>Savaş kendiliğinden oynar. İzle, güçlendiğini gör.</div><div><b>⚡</b>Bazı kartlar yan yana gizli kombo yapar. Açıklamalarına bak.</div><div><b>★</b>Aynı kartı tekrar alırsan kart yükselir.</div></div>
+  <button class="big" id="go">Başla</button>`;return;}
+ if(screen==='prep'){const f=FIGHTS[run.fight];
+  app.innerHTML=hud()+enemyBox(f)+`<p class="hint">${sel<0?'Sırayı değiştirmek için iki karta dokun.':'Şimdi yer değiştireceği yere dokun.'}</p>`+rowsHTML(run.board)+infoBox()+`<button class="big" id="fight">Savaşa başla</button>`;return;}
+ if(screen==='reward'){
+  if(pend){const base=powerScore(run.board,run.powers);const delta=run.board.map((s,i)=>{const b=run.board.slice();b[i]={id:pend,lv:0};return powerScore(b,run.powers)-base;});
+   app.innerHTML=hud()+`<p class="hint">${esc(CARD[pend].ad)} nereye? Boş yere ya da değiştireceğin karta dokun.</p>`+rowsHTML(run.board,{placing:1,delta})+`<button class="ghost" id="back">Geri — başka kart seç</button>`;return;}
+  app.innerHTML=hud()+`<p class="hint">Bir kart seç</p>`+offerList.map(id=>{const c=CARD[id],own=run.board.find(s=>s&&s.id===id);
+   return `<button class="offer ${c.renk}" data-offer="${id}"><img src="${IMG[c.img]}" alt=""><span><span class="nm">${esc(c.ad)}</span><span class="tag ${c.renk}">${COLORS[c.renk].ad}</span><br><span class="ef">${esc(cardText(c,own?own.lv+1:0))}</span>${partnerOf(id)?`<span class="cmb">Kombo: ${esc(CARD[partnerOf(id)[0]].ad)}</span>`:''}${own?`<span class="badge">Sende var → ${LVAD[own.lv+1]}'e yükselt ${lvStars(own.lv+1)}</span>`:''}</span></button>`}).join('')+`<button class="ghost" id="skip">Hiçbirini alma</button>`;return;}
+ if(screen==='power'){app.innerHTML=hud()+`<h1 style="font-size:32px">Boss yenildi!</h1><p class="hint">Kalıcı bir güç seç — bütün koşu boyunca geçerli.</p>`+powList.map(p=>`<button class="offer" data-pow="${p}" style="border-left-color:var(--gold)"><span><span class="nm">✦ ${esc(POWER[p].ad)}</span><br><span class="ef">${esc(POWER[p].txt)}</span></span></button>`).join('');return;}
+ if(screen==='result'){const st=fs,win=st.over>0;const rows=st.cards.filter(Boolean).filter(o=>o.total>0||o.c.pas).sort((a,b)=>b.total-a.total);
+  const sc=powerScore(run.board,run.powers);
+  app.innerHTML=`<div class="res ${win?'win':''}"><h1>${win?'Zafer!':'Yenilgi'}</h1><p class="sub">${win?'':'Bir can kaybettin. '}Toplam ${Math.round(st.dealt)} hasar · ${Math.round(st.t)} sn</p>
+  <div class="contrib">${rows.map(o=>`<div><img src="${IMG[o.c.img]}" alt=""><span>${esc(o.c.ad)} <small>×${o.fired}</small></span><b>${o.c.pas?'destek':Math.round(o.total)}</b></div>`).join('')}</div>
+  <p class="sub">Şimdi bir kart seçip daha da güçleneceksin.</p></div><button class="big" id="next">Devam</button>`;return;}
+ if(screen==='end'){const w=run.history.filter(x=>x).length,won=run.lives>0;
+  app.innerHTML=`<div class="res ${won?'win':''}"><h1>${won?'Kervan geçti!':'Kervan durdu'}</h1><p class="sub">${w} / 10 savaş kazandın · son gücün ${powerScore(run.board,run.powers)}</p></div>`+rowsHTML(run.board)+`<button class="big" id="again">Tekrar oyna</button>`;return;}
+}
+function infoBox(){if(info)return `<div class="info"><b>${esc(info.t)}</b>${esc(info.d)}</div>`;
+ if(sel>=0&&run.board[sel]){const s=run.board[sel],c=CARD[s.id];const p=partnerOf(c.id);return `<div class="info"><b>${esc(c.ad)} ${lvStars(s.lv)} · ${COLORS[c.renk].ad}</b>${esc(cardText(c,s.lv))}${p?`<br><span style="color:var(--mut)">Kombo: ${esc(CARD[p[0]].ad)} yanındayken ${esc(p[1].txt.charAt(0).toLowerCase()+p[1].txt.slice(1))}</span>`:''}</div>`}
+ return '<div class="info" style="color:var(--mut)">Bir karta dokun: ne yaptığını burada görürsün.</div>';}
+function startFight(){fs=newFight(run);last=lastScore;screen='fight';sel=-1;info=null;
+ app.innerHTML=hud()+enemyBox(fs.f,1)+`<div class="lbl"><span>Senin canın</span><button class="speed" id="spd">${speed}×</button></div><div class="bar me" id="php"><s></s><i></i><span></span></div><div class="lbl"><span id="pbn" class="burn"></span><span id="psh"></span></div>`+rowsHTML(run.board,{fight:1});
+ let acc=0,prev=performance.now();const tick=now=>{if(screen!=='fight')return;acc+=Math.min(.1,(now-prev)/1000)*speed;prev=now;
+  while(acc>=DT&&!fs.over){acc-=DT;for(const e of step(fs))fx(e);}
+  draw();if(fs.over){setTimeout(endFight,700);return}requestAnimationFrame(tick);};requestAnimationFrame(tick);}
+function setBar(id,v,max,sh){const b=$(id);if(!b)return;const p=Math.max(0,v)/max*100;b.querySelector('i').style.width=p+'%';b.querySelector('s').style.width=Math.min(100,(sh||0)/max*100)+'%';b.querySelector('span').textContent=`${Math.max(0,Math.ceil(v))} / ${max}`+(sh?`  +${Math.round(sh)} kalkan`:'');}
+function draw(){setBar('#ehp',fs.e.hp,fs.e.max,fs.e.shield);setBar('#php',fs.p.hp,fs.p.max,fs.p.shield);
+ $('#ebn').textContent=fs.e.burn?`Yanıyor: saniyede ${fs.e.burn}`:'';$('#pbn').textContent=fs.p.burn?`Yanıyorsun: saniyede ${fs.p.burn}`:'';
+ fs.cards.forEach(o=>{if(!o||!o.cd)return;const r=$('#r'+o.i);if(r)r.querySelector('.cdb').style.width=(o.t/o.cd*100)+'%';});}
+function flt(target,txt,col){const el=target==='e'?$('#enemy'):$('#php');if(!el)return;const d=document.createElement('div');d.className='float';d.textContent=txt;d.style.color=col;
+ const r=el.getBoundingClientRect();d.style.left=(r.left+window.scrollX+r.width*(.35+Math.random()*.4))+'px';d.style.top=(r.top+window.scrollY+r.height*.3)+'px';d.style.position='absolute';document.body.appendChild(d);setTimeout(()=>d.remove(),900);}
+function fx(e){const r=e.i!=null?$('#r'+e.i):null;if(r){r.classList.remove('fire');void r.offsetWidth;r.classList.add('fire');}
+ if(e.k==='dmg')flt('e','-'+e.v,'#fff');if(e.k==='eburn')flt('e','-'+e.v,'#ffb04a');if(e.k==='burn')flt('e','+'+e.v+' yanma','#ffb04a');
+ if(e.k==='eatk')flt('p','-'+e.v,'#ff6b5a');if(e.k==='shield')flt('p','+'+e.v+' kalkan','#9cc4ff');if(e.k==='heal')flt('p','+'+e.v,'#7ee08a');if(e.k==='eheal')flt('e','+'+e.v,'#7ee08a');if(e.k==='eshield')flt('e','+'+e.v+' kalkan','#9cc4ff');if(e.k==='pburn')flt('p','-'+e.v,'#ffb04a');}
+function endFight(){const win=fs.over>0;run.history.push(win);if(win)run.maxHp+=10;else run.lives--;screen='result';render();}
+function afterResult(){const f=FIGHTS[run.fight];const win=fs.over>0;run.fight++;
+ if(run.lives<=0||run.fight>=10){screen='end';render();return;}
+ if(f.boss&&win){powList=powerOffers(run);screen='power';render();return;}
+ toReward();}
+function toReward(){offerList=offers(run);pend=null;screen='reward';render();}
+app.addEventListener('click',ev=>{const t=ev.target.closest('button');if(!t)return;
+ if(t.id==='go'||t.id==='again'){run=newRun();lastScore=powerScore(run.board,run.powers);screen='prep';sel=-1;render();return;}
+ if(t.dataset.pw){const p=POWER[t.dataset.pw];info={t:'✦ '+p.ad,d:p.txt};if(screen==='prep')render();else toast(p.ad+': '+p.txt);return;}
+ if(t.id==='fight'){lastScore=powerScore(run.board,run.powers);startFight();return;}
+ if(t.id==='spd'){speed=speed===1?2:speed===2?3:1;t.textContent=speed+'×';return;}
+ if(t.id==='next'){afterResult();return;}
+ if(t.id==='skip'){screen='prep';render();return;}
+ if(t.id==='back'){pend=null;render();return;}
+ if(t.dataset.pow){run.powers.push(t.dataset.pow);if(t.dataset.pow==='can')run.maxHp+=50;toast('✦ '+POWER[t.dataset.pow].ad+' alındı');toReward();return;}
+ if(t.dataset.offer){const id=t.dataset.offer,i=run.board.findIndex(s=>s&&s.id===id);
+  if(i>=0){const g0=powerScore(run.board,run.powers);run.board[i].lv++;toast(`${CARD[id].ad} → ${LVAD[run.board[i].lv]}! Güç ${g0} → ${powerScore(run.board,run.powers)}`);screen='prep';sel=-1;render();return;}
+  pend=id;render();return;}
+ if(t.dataset.slot!=null){const i=+t.dataset.slot;
+  if(screen==='reward'&&pend){const g0=powerScore(run.board,run.powers);const old=run.board[i];run.board[i]={id:pend,lv:0};const nc=computeBoard(run.board,run.powers).combos.find(c=>c.a===pend||c.b===pend);toast(nc?`⚡ ${nc.ad}! Güç ${g0} → ${powerScore(run.board,run.powers)}`:`${old?CARD[old.id].ad+' çıktı · ':''}Güç ${g0} → ${powerScore(run.board,run.powers)}`);pend=null;screen='prep';sel=-1;render();return;}
+  if(screen==='prep'){info=null;if(sel<0){if(run.board[i])sel=i;}else if(sel===i)sel=-1;else{const b=run.board;[b[sel],b[i]]=[b[i],b[sel]];sel=-1;}render();}}
+});
+render();
+}
+</script></body></html>
